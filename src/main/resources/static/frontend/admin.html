@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel - IRCTC</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>👨‍💼 Admin - Add Train Route</h2>
+
+  <input type="text" id="trainName" placeholder="Train Name">
+  <input type="text" id="source" placeholder="Source Station">
+  <input type="text" id="destination" placeholder="Destination Station">
+  <input type="date" id="date">
+
+  <button onclick="addTrain()">Add Train</button>
+
+  <hr>
+
+  <h3>🚆 Available Trains</h3>
+  <div id="trainList"></div>
+
+</div>
+
+<script>
+let trains = [];
+
+/* Load saved trains */
+window.onload = function() {
+  let savedTrains = JSON.parse(localStorage.getItem("trainData"));
+  if (savedTrains) {
+    trains = savedTrains;
+  }
+  showTrains();
+};
+
+/* Add Train Function */
+function addTrain() {
+
+  let trainName = document.getElementById("trainName").value.trim();
+  let source = document.getElementById("source").value.trim();
+  let destination = document.getElementById("destination").value.trim();
+  let date = document.getElementById("date").value;
+
+  if (trainName === "" || source === "" || destination === "" || date === "") {
+    alert("Please fill all train details!");
+    return;
+  }
+
+  let newTrain = {
+    id: Date.now(),
+    trainName: trainName,
+    source: source,
+    destination: destination,
+    date: date
+  };
+
+  trains.push(newTrain);
+
+  /* Save trains in localStorage */
+  localStorage.setItem("trainData", JSON.stringify(trains));
+
+  alert("Train Added Successfully 🚆");
+
+  /* Clear input fields */
+  document.getElementById("trainName").value = "";
+  document.getElementById("source").value = "";
+  document.getElementById("destination").value = "";
+  document.getElementById("date").value = "";
+
+  showTrains();
+}
+
+/* Display Trains */
+function showTrains() {
+
+  let listDiv = document.getElementById("trainList");
+  listDiv.innerHTML = "";
+
+  trains.forEach((t, index) => {
+    let div = document.createElement("div");
+    div.style.border = "1px solid gray";
+    div.style.padding = "8px";
+    div.style.margin = "8px 0";
+
+    div.innerHTML = `
+      <p><b>${t.trainName}</b></p>
+      <p>${t.source} → ${t.destination}</p>
+      <p>Date: ${t.date}</p>
+      <button onclick="removeTrain(${index})">Remove</button>
+    `;
+
+    listDiv.appendChild(div);
+  });
+}
+
+/* Remove Train */
+function removeTrain(index) {
+  trains.splice(index, 1);
+  localStorage.setItem("trainData", JSON.stringify(trains));
+  showTrains();
+}
+</script>
+
+</body>
+</html>

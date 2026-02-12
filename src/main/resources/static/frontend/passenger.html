@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Passenger Details - IRCTC</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>Add Passenger Details</h2>
+
+  <input type="text" id="pname" placeholder="Passenger Name">
+  <input type="number" id="page" placeholder="Age">
+
+  <select id="pgender">
+    <option value="">Select Gender</option>
+    <option>Male</option>
+    <option>Female</option>
+    <option>Other</option>
+  </select>
+
+  <select id="pberth">
+    <option value="">Berth Preference</option>
+    <option>Lower</option>
+    <option>Middle</option>
+    <option>Upper</option>
+    <option>Side Lower</option>
+    <option>Side Upper</option>
+  </select>
+
+  <button onclick="addPassenger()">Add Passenger</button>
+
+  <hr>
+
+  <h3>Passenger List</h3>
+  <div id="passengerList"></div>
+
+  <button onclick="goPayment()">Proceed to Payment</button>
+
+</div>
+
+<script>
+let passengers = [];
+
+// Add passenger function
+function addPassenger() {
+
+  let name = document.getElementById("pname").value;
+  let age = document.getElementById("page").value;
+  let gender = document.getElementById("pgender").value;
+  let berth = document.getElementById("pberth").value;
+
+  if(name === "" || age === "" || gender === "" || berth === "") {
+    alert("Please fill all passenger details!");
+    return;
+  }
+
+  // Create passenger object
+  let passenger = {
+    name: name,
+    age: age,
+    gender: gender,
+    berth: berth
+  };
+
+  passengers.push(passenger);
+
+  // Save list in localStorage
+  localStorage.setItem("passengers", JSON.stringify(passengers));
+
+  alert("Passenger Added Successfully!");
+
+  // Clear inputs
+  document.getElementById("pname").value = "";
+  document.getElementById("page").value = "";
+  document.getElementById("pgender").value = "";
+  document.getElementById("pberth").value = "";
+
+  showPassengers();
+}
+
+// Display passenger list
+function showPassengers() {
+
+  let listDiv = document.getElementById("passengerList");
+  listDiv.innerHTML = "";
+
+  passengers.forEach((p, index) => {
+    let div = document.createElement("div");
+    div.style.border = "1px solid gray";
+    div.style.padding = "8px";
+    div.style.margin = "8px 0";
+
+    div.innerHTML = `
+      <p><b>${index + 1}. ${p.name}</b></p>
+      <p>Age: ${p.age}, Gender: ${p.gender}</p>
+      <p>Berth: ${p.berth}</p>
+      <button onclick="removePassenger(${index})">Remove</button>
+    `;
+
+    listDiv.appendChild(div);
+  });
+}
+
+// Remove passenger
+function removePassenger(index) {
+  passengers.splice(index, 1);
+
+  localStorage.setItem("passengers", JSON.stringify(passengers));
+
+  showPassengers();
+}
+
+// Proceed to payment
+function goPayment() {
+
+  if(passengers.length === 0) {
+    alert("Please add at least one passenger!");
+    return;
+  }
+
+  // ✅ Get selected train
+  let selectedTrain = JSON.parse(localStorage.getItem("selectedTrain"));
+
+  // ✅ Take first passenger for booking (for now)
+  let p = passengers[0];
+
+  // ✅ Create booking object
+  let bookingData = {
+    trainId: selectedTrain.trainId,
+    trainName: selectedTrain.trainName,
+    passengerName: p.name,
+    passengerAge: p.age,
+    passengerGender: p.gender,
+    status: "CONFIRMED"
+  };
+
+  // ✅ Call Spring Boot Booking API
+  fetch("http://localhost:8080/api/bookings/book", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(bookingData)
+  })
+  .then(response => response.text())
+  .then(result => {
+
+    alert(result);
+
+    // ✅ Save booking for confirmation page
+    localStorage.setItem("bookingInfo", JSON.stringify(bookingData));
+
+    // ✅ Redirect to confirmation page
+    window.location.href = "confirmation.html";
+
+  })
+  .catch(error => {
+    console.log(error);
+    alert("Booking Failed ❌");
+  });
+}
+
+
+// Load passengers if already added
+window.onload = function() {
+  let saved = JSON.parse(localStorage.getItem("passengers"));
+  if(saved) {
+    passengers = saved;
+    showPassengers();
+  }
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ticket Confirmation - IRCTC</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>🎟️ Ticket Confirmed</h2>
+
+  <div id="ticketDetails"></div>
+
+  <button onclick="cancelTicket()">Cancel Ticket</button>
+  <button onclick="goHome()">Go Dashboard</button>
+
+</div>
+
+<script>
+let passengers = JSON.parse(localStorage.getItem("passengers"));
+let train = JSON.parse(localStorage.getItem("selectedTrain"));
+let payment = JSON.parse(localStorage.getItem("paymentInfo"));
+
+let bookingId = Math.floor(Math.random() * 100000);
+
+// Display ticket info
+let ticketDiv = document.getElementById("ticketDetails");
+
+let passengerHTML = "";
+passengers.forEach((p, i) => {
+  passengerHTML += `<p>${i+1}. ${p.name} (${p.age}, ${p.gender}) - ${p.berth}</p>`;
+});
+
+ticketDiv.innerHTML = `
+  <h3>Booking ID: ${bookingId}</h3>
+  <p><b>Train:</b> ${train.trainName}</p>
+
+  <h3>Passenger Details:</h3>
+  ${passengerHTML}
+
+  <h3>Payment Details:</h3>
+  <p><b>Method:</b> ${payment.method}</p>
+  <p><b>Total Paid:</b> ₹${payment.total}</p>
+
+  <h2 style="color:green;">Status: CONFIRMED ✅</h2>
+`;
+
+// Cancel ticket function
+function cancelTicket() {
+  alert("Ticket Cancelled ❌");
+
+  localStorage.setItem("ticketStatus", "CANCELLED");
+
+  window.location.href = "cancel.html";
+}
+
+// Go dashboard
+function goHome() {
+  window.location.href = "dashboard.html";
+}
+</script>
+
+</body>
+</html>

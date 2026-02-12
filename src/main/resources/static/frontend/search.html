@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Search Trains - IRCTC</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>Search Trains</h2>
+
+  <input type="text" id="source" placeholder="Enter Source (e.g. Hyderabad)">
+  <input type="text" id="destination" placeholder="Enter Destination (e.g. Delhi)">
+  <input type="date" id="date">
+
+  <button onclick="searchTrain()">Search</button>
+
+</div>
+
+<script>
+function searchTrain() {
+
+  let source = document.getElementById("source").value.trim();
+  let destination = document.getElementById("destination").value.trim();
+  let date = document.getElementById("date").value;
+
+  if(source === "" || destination === "" || date === "") {
+    alert("Please fill all fields!");
+    return;
+  }
+
+  // ✅ Convert date always into YYYY-MM-DD format
+  date = new Date(date).toISOString().split("T")[0];
+
+  // Save search info in localStorage
+  localStorage.setItem("searchData", JSON.stringify({
+    source: source,
+    destination: destination,
+    date: date
+  }));
+
+  console.log("Search Saved:", {source, destination, date});
+
+  // Go to trains list page
+  window.location.href = "trains.html";
+}
+</script>
+
+
+</body>
+</html>

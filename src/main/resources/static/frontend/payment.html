@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Payment - IRCTC</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>Payment Gateway</h2>
+
+  <div id="summary"></div>
+
+  <h3>Select Payment Method</h3>
+
+  <select id="paymentMethod">
+    <option value="">Choose Method</option>
+    <option>UPI</option>
+    <option>Debit Card</option>
+    <option>Credit Card</option>
+    <option>Net Banking</option>
+  </select>
+
+  <button onclick="makePayment()">Pay Now</button>
+
+</div>
+
+<script>
+// Load passengers
+let passengers = JSON.parse(localStorage.getItem("passengers"));
+let selectedTrain = JSON.parse(localStorage.getItem("selectedTrain"));
+
+let amountPerPassenger = 500;
+let totalAmount = passengers.length * amountPerPassenger;
+
+// Show booking summary
+let summaryDiv = document.getElementById("summary");
+
+summaryDiv.innerHTML = `
+  <h3>Booking Summary</h3>
+  <p><b>Train:</b> ${selectedTrain.trainName}</p>
+  <p><b>Total Passengers:</b> ${passengers.length}</p>
+  <p><b>Fare per Passenger:</b> ₹${amountPerPassenger}</p>
+  <h3>Total Amount: ₹${totalAmount}</h3>
+`;
+
+// Payment function
+function makePayment() {
+
+  let method = document.getElementById("paymentMethod").value;
+
+  if(method === "") {
+    alert("Please select a payment method!");
+    return;
+  }
+
+  alert("Payment Successful via " + method + " 🎉");
+
+  // Save payment info
+  localStorage.setItem("paymentInfo", JSON.stringify({
+    method: method,
+    total: totalAmount
+  }));
+
+  // Redirect to ticket confirmation
+  window.location.href = "ticket.html";
+}
+</script>
+
+</body>
+</html>

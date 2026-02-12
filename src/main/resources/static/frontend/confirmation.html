@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ticket Confirmation</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>🎉 Ticket Confirmed Successfully</h2>
+
+  <div id="details"></div>
+
+  <button onclick="goHome()">Back to Home</button>
+</div>
+
+<script>
+let booking = JSON.parse(localStorage.getItem("bookingInfo"));
+
+document.getElementById("details").innerHTML = `
+  <h3>Train: ${booking.trainName}</h3>
+  <p><b>Passenger:</b> ${booking.passengerName}</p>
+  <p><b>Age:</b> ${booking.passengerAge}</p>
+  <p><b>Gender:</b> ${booking.passengerGender}</p>
+  <p><b>Status:</b> ${booking.status}</p>
+`;
+
+function goHome() {
+  window.location.href = "search.html";
+}
+</script>
+
+</body>
+</html>

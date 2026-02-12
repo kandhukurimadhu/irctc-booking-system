@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Available Trains - IRCTC</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>Available Trains</h2>
+
+  <div id="trainList"></div>
+</div>
+
+<script>
+// ✅ Get search data from localStorage
+let searchData = JSON.parse(localStorage.getItem("searchData"));
+
+let trainListDiv = document.getElementById("trainList");
+
+// ✅ Fetch trains from Spring Boot Backend
+fetch(`http://localhost:8080/api/trains/search?source=${searchData.source}&destination=${searchData.destination}&date=${searchData.date}`)
+  .then(response => response.json())
+  .then(trains => {
+
+    // ✅ No trains found
+    if (trains.length === 0) {
+      trainListDiv.innerHTML = "<h3>No matching trains found 🚫</h3>";
+      return;
+    }
+
+    // ✅ Display trains
+    trains.forEach(train => {
+
+      let div = document.createElement("div");
+      div.style.border = "1px solid gray";
+      div.style.padding = "10px";
+      div.style.margin = "10px 0";
+
+      div.innerHTML = `
+        <h3>${train.trainName}</h3>
+        <p><b>From:</b> ${train.source}</p>
+        <p><b>To:</b> ${train.destination}</p>
+        <p><b>Date:</b> ${train.date}</p>
+
+        <button onclick="selectTrain(${train.id}, '${train.trainName}')">
+          Book Now
+        </button>
+      `;
+
+      trainListDiv.appendChild(div);
+    });
+
+  })
+  .catch(error => {
+    trainListDiv.innerHTML = "<h3>Error connecting to backend ❌</h3>";
+    console.log(error);
+  });
+
+
+// ✅ Select Train
+function selectTrain(id, name) {
+
+  localStorage.setItem("selectedTrain", JSON.stringify({
+    trainId: id,
+    trainName: name
+  }));
+
+  alert("Train Selected: " + name);
+
+  window.location.href = "passenger.html";
+}
+</script>
+
+</body>
+</html>
